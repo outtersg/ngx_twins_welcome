@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ngx_feature=ngx_twins_welcome
+. auto/feature
+
+patchcore()
+{
+	local patches= p
+	
+	p="flag"
+	patches="$patches $p"
+	
+	p="num"
+	patches="$patches $p"
+	
+	for p in $patches
+	do
+		patch -p1 < "$ngx_addon_dir/patches/$p.patch" || exit 1
+	done
+}
+
+patchcore

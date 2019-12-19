@@ -1,0 +1,30 @@
+--- a/src/core/ngx_conf_file.c	2019-09-24 17:08:48.000000000 +0200
++++ b/src/core/ngx_conf_file.c	2019-12-19 22:27:42.628547000 +0100
+@@ -1029,13 +1029,11 @@
+ 
+     ngx_str_t        *value;
+     ngx_flag_t       *fp;
++    ngx_flag_t        old;
+     ngx_conf_post_t  *post;
+ 
+     fp = (ngx_flag_t *) (p + cmd->offset);
+-
+-    if (*fp != NGX_CONF_UNSET) {
+-        return "is duplicate";
+-    }
++    old = *fp;
+ 
+     value = cf->args->elts;
+ 
+@@ -1053,6 +1051,11 @@
+         return NGX_CONF_ERROR;
+     }
+ 
++    if (old != NGX_CONF_UNSET) {
++        return *fp == old ? NGX_CONF_OK : "is duplicate";
++    }
++
++
+     if (cmd->post) {
+         post = cmd->post;
+         return post->post_handler(cf, post, fp);

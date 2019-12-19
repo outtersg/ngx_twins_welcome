@@ -1,0 +1,31 @@
+--- a/src/core/ngx_conf_file.c	2019-09-24 17:08:48.000000000 +0200
++++ b/src/core/ngx_conf_file.c	2019-12-19 22:27:42.628547000 +0100
+@@ -1169,15 +1172,13 @@
+     char  *p = conf;
+ 
+     ngx_int_t        *np;
++    ngx_int_t         old;
+     ngx_str_t        *value;
+     ngx_conf_post_t  *post;
+ 
+ 
+     np = (ngx_int_t *) (p + cmd->offset);
+-
+-    if (*np != NGX_CONF_UNSET) {
+-        return "is duplicate";
+-    }
++    old = *np;
+ 
+     value = cf->args->elts;
+     *np = ngx_atoi(value[1].data, value[1].len);
+@@ -1185,6 +1186,10 @@
+         return "invalid number";
+     }
+ 
++    if (old != NGX_CONF_UNSET) {
++        return *np == old ? NGX_CONF_OK : "is duplicate";
++    }
++
+     if (cmd->post) {
+         post = cmd->post;
+         return post->post_handler(cf, post, np);
